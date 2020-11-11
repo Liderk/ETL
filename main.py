@@ -2,6 +2,8 @@ import csv
 import json
 from datetime import datetime
 
+# список полей, по которым нужно создать заголовки tsv файла.
+# эти данные находятся внтури custom_fields_values
 custom_fields_values = {
     512318: 'amo_city',
     632884: 'drupal_utm',
@@ -49,6 +51,10 @@ def transform_data(data):
     result = []
     for item in data:
         temp = {}
+        # для начала выписал вот так вот все поля, которые получаются
+        # напрямую тут тоже потом уберу это или в функцию или в класс пока
+        # делаю все напрямую, без функций, так как пытаюсь понять структуру
+        # программы. Не опыта видеть в голове сразу весь будущий код
         temp['id'] = item.get('id', None)
         temp["created_at"] = item.get("created_at", None)
         temp["amo_pipeline_id"] = item.get("pipeline_id", None)
