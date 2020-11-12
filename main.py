@@ -6,7 +6,7 @@ import csv
 import json
 from datetime import datetime
 
-tsv_headers = {
+main_headers = {
     'id': 'id',
     'created_at': 'created_at',
     'trashed_at': 'amo_trashed_at',
@@ -14,6 +14,8 @@ tsv_headers = {
     'status_id': 'amo_status_id',
     'updated_at': 'amo_updated_at',
     'closed_at': 'amo_closed_at',
+}
+sub_headers = {
     512318: 'amo_city',
     632884: 'drupal_utm',
     648158: 'tilda_utm_source',
@@ -66,10 +68,15 @@ class Etl:
             if hed in self.headers.keys():
                 temp[self.headers[hed]] = data[hed]
 
-        for items in data["custom_fields_values"]:
-            if items["field_id"] in self.headers.keys():
-                temp[self.headers[items["field_id"]]] = items["values"][0][
-                    'value']
+        for keys in sub_headers.keys():
+            for items in data["custom_fields_values"]:
+                if items["field_id"] == keys:
+                    temp[self.headers[items["field_id"]]] = items["values"][0][
+                        'value']
+                    break
+            else:
+                temp[self.headers[keys]] = 'None'
+                continue
 
         time_data = self._get_time_data(data.get("created_at"))
         temp.update(time_data)
@@ -95,7 +102,8 @@ class Etl:
 
 
 def main():
-    data = Etl(tsv_headers, 'amo_json_2020_40.json')
+    main_headers.update(sub_headers)
+    data = Etl(main_headers, 'amo_json_2020_40.json')
     data.load()
 
 
