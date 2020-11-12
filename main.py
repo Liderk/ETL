@@ -76,7 +76,6 @@ class Etl:
                     break
             else:
                 temp[self.headers[keys]] = 'None'
-                continue
 
         time_data = self._get_time_data(data.get("created_at"))
         temp.update(time_data)
