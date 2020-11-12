@@ -52,6 +52,14 @@ class Etl:
             data = json.load(read_j)
         return data
 
+    def _get_time_data(self, timestamp):
+        data = {}
+        value = datetime.fromtimestamp(timestamp)
+        data['created_at_year'] = value.strftime('%Y')
+        data['created_a_month'] = value.strftime('%m')
+        data['created_at_week'] = value.strftime("%V")
+        return data
+
     def transform_row(self, data):
         temp = {}
         for hed in data.keys():
@@ -62,6 +70,9 @@ class Etl:
             if items["field_id"] in self.headers.keys():
                 temp[self.headers[items["field_id"]]] = items["values"][0][
                     'value']
+
+        time_data = self._get_time_data(data.get("created_at"))
+        temp.update(time_data)
         return temp
 
     def transform(self):
