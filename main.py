@@ -54,7 +54,7 @@ class Etl:
             'field1': result['ct_utm_source'],
             'field2': result['tilda_utm_source'],
             'field3': result['tilda_utm_source'],
-            'error_source':  'utm_source'
+            'error_source': 'utm_source'
         }
                            )
         self._get_validate(**{
@@ -284,6 +284,10 @@ class Etl:
                 writer.writerow(row)
 
 
-a = Etl('amo_json_2020_40.json')
-a.get_tsv()
+def main():
+    a = Etl('amo_json_2020_40.json')
+    a.get_tsv()
 
+
+if __name__ == "__main__":
+    main()
