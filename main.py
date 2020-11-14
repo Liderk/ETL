@@ -36,11 +36,11 @@ class Etl:
             data = json.load(read_j)
         return data
 
-    def _validate_write_logfile(self, data):
+    def _validate_write_logfile(self, error):
         with open('info.log', 'a') as logfile:
-            logfile.write(data + '\n')
+            logfile.write(error + '\n')
 
-    def _get_validate(self, **kwargs):
+    def _get_error(self, **kwargs):
         if kwargs['field1'] or kwargs['field2']:
             if kwargs['field1'] != kwargs['field3'] or kwargs['field2'] != \
                     kwargs['field3']:
@@ -49,46 +49,46 @@ class Etl:
                     f"в сделке {kwargs['id']}")
 
     def validate(self, result):
-        self._get_validate(**{
+        self._get_error(**{
             'id': result['id'],
             'field1': result['ct_utm_source'],
             'field2': result['tilda_utm_source'],
             'field3': result['tilda_utm_source'],
             'error_source': 'utm_source'
         }
-                           )
-        self._get_validate(**{
+                        )
+        self._get_error(**{
             'id': result['id'],
             'field1': result['ct_utm_medium'],
             'field2': result['tilda_utm_medium'],
             'field3': result['lead_utm_medium'],
             'error_source': 'utm_medium'
         }
-                           )
-        self._get_validate(**{
+                        )
+        self._get_error(**{
             'id': result['id'],
             'field1': result['ct_utm_campaign'],
             'field2': result['tilda_utm_campaign'],
             'field3': result['lead_utm_campaign'],
             'error_source': 'utm_campaign'
         }
-                           )
-        self._get_validate(**{
+                        )
+        self._get_error(**{
             'id': result['id'],
             'field1': result['ct_utm_content'],
             'field2': result['tilda_utm_content'],
             'field3': result['lead_utm_content'],
             'error_source': 'utm_content'
         }
-                           )
-        self._get_validate(**{
+                        )
+        self._get_error(**{
             'id': result['id'],
             'field1': result['ct_utm_term'],
             'field2': result['tilda_utm_term'],
             'field3': result['lead_utm_term'],
             'error_source': 'utm_term'
         }
-                           )
+                        )
 
     def _parse_utm_medium_and_sourse(
             self,
