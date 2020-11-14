@@ -36,6 +36,60 @@ class Etl:
             data = json.load(read_j)
         return data
 
+    def _validate_write_logfile(self, data):
+        with open('info.log', 'a') as logfile:
+            logfile.write(data + '\n')
+
+    def _get_validate(self, **kwargs):
+        if kwargs['field1'] or kwargs['field2']:
+            if kwargs['field1'] != kwargs['field3'] or kwargs['field2'] != \
+                    kwargs['field3']:
+                self._validate_write_logfile(
+                    f"Конфликт {kwargs['error_source']} "
+                    f"в сделке {kwargs['id']}")
+
+    def validate(self, result):
+        self._get_validate(**{
+            'id': result['id'],
+            'field1': result['ct_utm_source'],
+            'field2': result['tilda_utm_source'],
+            'field3': result['tilda_utm_source'],
+            'error_source':  'utm_source'
+        }
+                           )
+        self._get_validate(**{
+            'id': result['id'],
+            'field1': result['ct_utm_medium'],
+            'field2': result['tilda_utm_medium'],
+            'field3': result['lead_utm_medium'],
+            'error_source': 'utm_medium'
+        }
+                           )
+        self._get_validate(**{
+            'id': result['id'],
+            'field1': result['ct_utm_campaign'],
+            'field2': result['tilda_utm_campaign'],
+            'field3': result['lead_utm_campaign'],
+            'error_source': 'utm_campaign'
+        }
+                           )
+        self._get_validate(**{
+            'id': result['id'],
+            'field1': result['ct_utm_content'],
+            'field2': result['tilda_utm_content'],
+            'field3': result['lead_utm_content'],
+            'error_source': 'utm_content'
+        }
+                           )
+        self._get_validate(**{
+            'id': result['id'],
+            'field1': result['ct_utm_term'],
+            'field2': result['tilda_utm_term'],
+            'field3': result['lead_utm_term'],
+            'error_source': 'utm_term'
+        }
+                           )
+
     def _parse_utm_medium_and_sourse(
             self,
             parse_row,
@@ -206,6 +260,7 @@ class Etl:
 
         }
         result.update(self._get_parsing_row(result))
+        self.validate(result)
         return result
 
     def transform(self):
@@ -214,7 +269,7 @@ class Etl:
             self.data.append(self.transform_row(row))
         return self.data
 
-    def load(self):
+    def get_tsv(self):
         result = self.transform()
         tsv_headers = result[0].keys()
         with open('results_2.tsv', 'w', newline='') as tsvfile:
@@ -230,4 +285,5 @@ class Etl:
 
 
 a = Etl('amo_json_2020_40.json')
-a.load()
+a.get_tsv()
+
