@@ -1,6 +1,6 @@
 import csv
 import json
-from datetime import datetime
+from datetime import date, datetime
 
 
 class Etl:
@@ -21,13 +21,13 @@ class Etl:
         'ct_device_id': 648276,
         'ct_os_id': 648278,
         'ct_browser_id': 648280,
+        'week_offset': {'day0': 5, 'hour0': 18},
 
     }
 
     def __init__(self, json_file, config=None):
-        # self.config = {}
-        # if config:
-        #     self.config = config
+        if config:
+            self.config = config
         self.file = json_file
         self.data = []
 
@@ -190,6 +190,20 @@ class Etl:
         }
         return parsing_fields
 
+    def _get_week_number(self,  amo_datetime):
+        day = amo_datetime.day
+        hour = amo_datetime.hour
+        month = amo_datetime.month
+        year = amo_datetime.year
+        week_raw = date(year, month, day).isocalendar()
+        if week_raw[2] > self.config['week_offset']['day0']:
+            return week_raw[1] + 1
+        elif week_raw[2] == self.config['week_offset']['day0'] and hour >= \
+                self.config['week_offset']['hour0']:
+            return week_raw[1] + 1
+        else:
+            return week_raw[1]
+
     def transform_row(self, row):
         amo_datetime = datetime.fromtimestamp(row['created_at'])
 
@@ -257,6 +271,7 @@ class Etl:
                 self.config['ct_browser_id']),
             'created_at_year_id': amo_datetime.year,
             'created_at_month_id': amo_datetime.month,
+            'created_at_week': self._get_week_number(amo_datetime)
 
         }
         result.update(self._get_parsing_row(result))
@@ -285,7 +300,10 @@ class Etl:
 
 
 def main():
-    a = Etl('amo_json_2020_40.json')
+    # amo_json_2020_40.json - название json файла
+    file_json = str(input('введите название json файла: '))
+    config = str(input('введите название конфиг файла: '))
+    a = Etl(file_json, config)
     a.get_tsv()
 
 
